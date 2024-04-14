@@ -1,0 +1,80 @@
+<html>
+    <head>
+    <script type="text/javascript">
+        function showTeacher(str)
+        {
+            if(str=="")
+            {
+                document.getElementById("txtHint").innerHTML="";
+                return;
+            }
+            if(window.XMLHttpRequest)
+            {
+                xmlhttp=new XMLHttpRequest();
+            }
+            xmlhttp.onreadystatechange=function()
+            {
+                if(xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                }
+            }
+            xmlhttp.open("GET","setb1_2.php?n="+str,true);
+            xmlhttp.send();
+        }
+    </script>
+    </head>
+    <body>
+        <form>
+            <select name="users" onchange="showTeacher(this.value)">
+            <option value="">SELECT A TEACHER</option>
+            <option value="1">John Smith</option>
+            <option value="2">Mary Johnson</option>
+            <option value="3">David Lee</option>
+        </select>
+        </form>
+        <br />
+        <div>
+            <b>Teachers details is listed below,</b><br><br>
+            <b id="txtHint"></b>
+    </div>
+    </body>
+</html>
+
+
+<?php
+if(isset($_GET["n"]))
+{
+$q=$_GET["n"];
+$host = "localhost";
+$port = "5432";
+$dbname = "postgres";
+$user = "postgres";
+$password = "pc2002";
+$conn = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
+if (!$conn)
+ {
+    die("Connection failed: " . pg_last_error());
+}
+
+$sql="SELECT * FROM teacher WHERE tno=$q";
+$result=pg_query($conn,$sql);
+
+echo"<table border='1'>";
+echo"<tr>";
+echo"<th>TNO</th>";
+echo"<th>TEACHERNAME</th>";
+echo"<th>QUALIFICATION</th>";
+echo"<th>TEACHERSALARY</th>";
+echo"</tr>";
+while ($row = pg_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td>" . $row['tno'] . "</td>";
+    echo "<td>" . $row['tname'] . "</td>";
+    echo "<td>" . $row['qualification'] . "</td>";
+    echo "<td>" . $row['salary'] . "</td>";
+    echo "</tr>";
+}
+echo"</table>";
+}
+?>
